@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\*\shell\RunNodeJS]
+@="使用 NodeJS 运行"
+
+[HKEY_CLASSES_ROOT\*\shell\RunNodeJS\command]
+@="cmd.exe /C start cmd.exe /K \"node \"%1\" && timeout /t 5 /nobreak > NUL & exit\""
