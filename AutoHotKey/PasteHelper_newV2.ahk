@@ -1,5 +1,16 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+
+; ── 托盘菜单回调函数（必须在调用前定义） ─────────────────
+ReloadScript(*) {
+    Reload
+}
+
+ExitScript(*) {
+    ExitApp
+}
+; ───────────────────────────────────────────────────────────
+
 ; ── 设置托盘图标 ───────────────────────────────────────
 ; 1. 设置鼠标悬停在图标上时显示的提示文本
 A_IconTip := "智能粘贴助手"
@@ -22,11 +33,11 @@ A_TrayMenu.Add()
 A_TrayMenu.Add("退出", ExitScript)
 ; ───────────────────────────────────────────────────────────
 
-
 global PasteMenu := Menu()
 PasteMenu.Add("原格式粘贴", PasteOriginal)
 PasteMenu.Add("纯文本粘贴", PastePlain)
 PasteMenu.Add("\n → 空格粘贴", PasteNoNewline)
+PasteMenu.Add("文件名安全粘贴", PasteFilenameSafe)
 
 ; ── Ctrl+Shift+V = 纯文本粘贴 ─────────────────────────────
 ^+v:: {
@@ -98,12 +109,32 @@ PasteNoNewline(*) {
     }
 }
 
-; ── 托盘菜单回调函数（必须在调用前定义） ─────────────────
-ReloadScript(*) {
-    Reload
+PasteFilenameSafe(*) {
+    ; 保存原始剪贴板
+    ClipSaved := A_Clipboard
+    try {
+        ; 替换非法文件名字符为下划线
+        text := ClipSaved
+        invalidChars := ['\', '/', ':', '*', '?', '"', '<', '>', '|']
+        for char in invalidChars {
+            text := StrReplace(text, char, "_")
+        }
+        ; 去除首尾空格并替换换行符
+        text := Trim(text)
+        text := StrReplace(text, "`r`n", "_")
+        text := StrReplace(text, "`r", "_")
+        text := StrReplace(text, "`n", "_")
+        
+        ; 将处理后的文本写入剪贴板
+        A_Clipboard := text
+        
+        ; 发送粘贴命令
+        Send("^v")
+        
+        ; 等待粘贴完成
+        Sleep(150)
+    } finally {
+        ; 恢复剪贴板
+        A_Clipboard := ClipSaved
+    }
 }
-
-ExitScript(*) {
-    ExitApp
-}
-; ───────────────────────────────────────────────────────────
