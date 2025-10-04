@@ -1,5 +1,7 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+; 记录上一次 Alt 松开的时间
+global AltUpTime := 0
 
 ; ── 托盘菜单回调函数（必须在调用前定义） ─────────────────
 ReloadScript(*) {
@@ -45,16 +47,26 @@ PasteMenu.Add("文件名安全粘贴", PasteFilenameSafe)
 }
 
 ; ── 双击 Alt 弹出菜单（非 vncviewer 时） ─────────────────
-~Alt::
-{
-    static lastTime := 0
-    if (A_PriorHotkey = "~Alt" && (A_TickCount - lastTime < 400)) {
-        ; 双击检测：400ms 内
-        if !WinActive("ahk_class vncviewer") {
+; Alt 松开时记录时间
+~Alt Up:: {
+    global AltUpTime := A_TickCount
+}
+
+; Alt 按下时判断双击
+~Alt:: {
+    global AltUpTime
+    ; 第一次按下时 AltUpTime 为 0，直接跳过
+    if (AltUpTime = 0)
+        return
+
+    ; 距离上一次松开的时间
+    if (A_TickCount - AltUpTime < 400) {
+        ; 双击
+        if !WinActive("ahk_class vncviewer")
             ShowPasteMenu()
-        }
+        ; 消费掉这次双击，避免后续重复触发
+        AltUpTime := 0
     }
-    lastTime := A_TickCount
 }
 
 ; ── 菜单定义 ─────────────────────────────────────────────
