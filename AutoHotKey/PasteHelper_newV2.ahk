@@ -137,6 +137,13 @@ PasteFilenameSafe(*) {
         text := StrReplace(text, "`r", "_")
         text := StrReplace(text, "`n", "_")
         
+        ; 去除连续下划线（可选，防止多个非法字符导致一长串 _）
+        while InStr(text, "__")
+            text := StrReplace(text, "__", "_")
+
+        ; 去除首尾下划线
+        text := Trim(text, "_")
+
         ; 将处理后的文本写入剪贴板
         A_Clipboard := text
         
