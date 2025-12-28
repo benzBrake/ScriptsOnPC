@@ -8,8 +8,6 @@ newV2 后缀证明 AHK v2 版本的。
 
 TigerVNC 窗口双击 Alt 输入中文，请根据提示修该输入法快捷键
 
-
-
 ## PastePlain_newV2.ahk
 
 Ctrl+Shift+V 粘贴纯文本
@@ -18,3 +16,6 @@ Ctrl+Shift+V 粘贴纯文本
 
 Ctrl+Shift+V 粘贴纯文本，双击 Alt 弹出高级粘贴菜单
 
+## PickWord_GoldenDict-ng_newV2.ahk
+
+按着 Ctrl 双击鼠标选中单词通过 GoldenDict-ng 查词
